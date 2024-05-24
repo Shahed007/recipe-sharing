@@ -1,4 +1,4 @@
-import { Box, Container, Typography } from "@mui/material";
+import { Box, Button, Container, Typography } from "@mui/material";
 
 const Hero = () => {
   return (
@@ -33,8 +33,8 @@ const Hero = () => {
         left={0}
         height={"100%"}
         width={"100%"}
-        display={'flex'}
-        alignItems={'center'}
+        display={"flex"}
+        alignItems={"center"}
       >
         <Container maxWidth="xl">
           <Typography
@@ -45,6 +45,16 @@ const Hero = () => {
           >
             Title
           </Typography>
+          <Typography mt={'1.2rem'} color={'white'} width={'50%'}>
+            Lorem ipsum dolor sit amet consectetur adipisicing elit. Delectus
+            incidunt dolores magni repudiandae voluptate repellat nulla, rem,
+            reiciendis corporis minus ea beatae dolorum. Hic consequatur error
+            dolor, explicabo quae voluptates!
+          </Typography>
+          <Box mt={'1.8rem'} component={'div'} display={'flex'} alignItems={'center'} gap={'1.6rem'}>
+            <Button size="large"  variant="outlined">Button 1</Button>
+            <Button sx={{bgcolor: '#c64600', color: 'text.secondary'}} size="large" variant="contained">Button 1</Button>
+          </Box>
         </Container>
       </Box>
     </Box>

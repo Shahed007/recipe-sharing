@@ -50,7 +50,7 @@ const Navbar = () => {
 
   
   return (
-    <AppBar position="sticky" sx={{ background: "background" }}>
+    <AppBar position="sticky" sx={{ background: "background", zIndex: 200 }}>
       <Container maxWidth="xl">
         <Toolbar disableGutters>
           <AdbIcon sx={{ display: { xs: "none", md: "flex" }, mr: 1 }} />
