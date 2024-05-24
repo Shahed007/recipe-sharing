@@ -16,8 +16,17 @@ interface CustomThemeOptions extends ThemeOptions {
       secondary: string;
     };
   };
-  typography: {
+  typography?: {
     fontFamily: string;
+  };
+  breakpoints?: {
+    values: {
+      xs: number;
+      sm: number;
+      md: number;
+      lg: number;
+      xl: number;
+    };
   };
 }
 
@@ -38,7 +47,16 @@ const themeOptions: CustomThemeOptions = {
     },
   },
   typography: {
-    fontFamily: ["Playfair Display", "Inter", "roboto", "sans-serif"].join(","),
+    fontFamily: ["Inter", "Playfair Display", "roboto", "sans-serif"].join(","),
+  },
+  breakpoints: {
+    values: {
+      xs: 0,
+      sm: 576,
+      md: 768,
+      lg: 1024,
+      xl: 1240,
+    },
   },
 };
 
