@@ -1,7 +1,8 @@
 import { Box } from "@mui/material";
+import Hero from "./Hero";
 
 const Home = () => {
-  return <Box component="section">Home</Box>;
+  return <Hero />;
 };
 
 export default Home;

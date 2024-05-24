@@ -12,9 +12,8 @@ import Tooltip from "@mui/material/Tooltip";
 import MenuItem from "@mui/material/MenuItem";
 import AdbIcon from "@mui/icons-material/Adb";
 import React, { useState } from "react";
-
-const pages = ["Home", "recipes", "Add-recipes"];
-const settings = ["MD Shahed", "Logout"];
+import { Link, useLocation } from "react-router-dom";
+import scrollTop from "../../../utility/scrollTop";
 
 const Navbar = () => {
   const [anchorElNav, setAnchorElNav] = useState<
@@ -23,8 +22,15 @@ const Navbar = () => {
   const [anchorElUser, setAnchorElUser] = useState<
     Element | (() => Element) | null
   >(null);
+  const { pathname } = useLocation();
+  const [isActiveRoute, setIsActiveRoute] = useState<boolean>(false);
 
   const user = null;
+
+  const handleActiveRoute = (path: string = '/') => {
+    setIsActiveRoute(path === pathname);
+    scrollTop();
+  };
 
   const handleOpenNavMenu = (event: React.MouseEvent<HTMLButtonElement>) => {
     console.log(event.currentTarget);
@@ -41,6 +47,8 @@ const Navbar = () => {
   const handleCloseUserMenu = () => {
     setAnchorElUser(null);
   };
+
+  
   return (
     <AppBar position="sticky" sx={{ background: "background" }}>
       <Container maxWidth="xl">
@@ -52,7 +60,6 @@ const Navbar = () => {
             component="a"
             href="#app-bar-with-responsive-menu"
             sx={{
-              mr: 2,
               display: { xs: "none", md: "flex" },
               fontFamily: "Playfair Display",
               fontWeight: 700,
@@ -93,14 +100,22 @@ const Navbar = () => {
                 display: { xs: "block", md: "none" },
               }}
             >
-              {pages.map((page) => (
-                <MenuItem key={page} onClick={handleCloseNavMenu}>
-                  <Typography textAlign="center">{page}</Typography>
+              {pages.map((item) => (
+                <MenuItem key={item.name} onClick={handleCloseNavMenu}>
+                  <Typography
+                    onClick={() => handleActiveRoute(item.path)}
+                    sx={{
+                      color: isActiveRoute  ? "primary.main" : "",
+                    }}
+                    textAlign="center"
+                  >
+                    {item.name}
+                  </Typography>
                 </MenuItem>
               ))}
             </Menu>
           </Box>
-          <Box display={'flex'} alignItems={'center'} component={"div"}>
+          <Box display={"flex"} alignItems={"center"} component={"div"}>
             <AdbIcon sx={{ display: { xs: "flex", md: "none" }, mr: 1 }} />
             <Typography
               variant="h5"
@@ -132,23 +147,28 @@ const Navbar = () => {
               },
             }}
           >
-            {pages.map((page) => (
-              <Button
-                key={page}
-                onClick={handleCloseNavMenu}
-                sx={{
-                  my: 2,
-                  color: "text.primary",
-                  display: "block",
-
-                  "&:hover": {
-                    bgcolor: "primary.main",
-                    color: "text.secondary",
-                  },
-                }}
+            {pages.map((item) => (
+              <Link
+                key={item.name}
+                to={item.path}
+                onClick={() => handleActiveRoute(item.path)}
               >
-                {page}
-              </Button>
+                <Button
+                  onClick={handleCloseNavMenu}
+                  sx={{
+                    my: 2,
+                    color: "text.primary",
+                    display: "block",
+                    bgcolor: isActiveRoute ? "primary.main" : "",
+                    "&:hover": {
+                      bgcolor: "primary.main",
+                      color: "text.secondary",
+                    },
+                  }}
+                >
+                  {item.name}
+                </Button>
+              </Link>
             ))}
           </Box>
 
@@ -216,3 +236,10 @@ const Navbar = () => {
 };
 
 export default Navbar;
+
+const pages: { name: string; path: string }[] = [
+  { name: "Home", path: "/" },
+  { name: "Recipes", path: "/recipes" },
+  { name: "Add-Recipes", path: "/add-recipes" },
+];
+const settings = ["MD Shahed", "Logout"];
