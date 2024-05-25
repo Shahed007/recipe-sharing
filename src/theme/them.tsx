@@ -2,16 +2,16 @@ import { createTheme, ThemeOptions } from "@mui/material";
 
 interface CustomThemeOptions extends ThemeOptions {
   palette?: {
-    primary: {
+    primary?: {
       main: string;
     };
-    secondary: {
+    secondary?: {
       main: string;
     };
-    background: {
+    background?: {
       default: string;
     };
-    text: {
+    text?: {
       primary: string;
       secondary: string;
     };
@@ -47,7 +47,7 @@ const themeOptions: CustomThemeOptions = {
     },
   },
   typography: {
-    fontFamily: ["Inter", "Playfair Display", "roboto", "sans-serif"].join(","),
+    fontFamily: ["Inter", "Playfair Display", "Roboto", "sans-serif"].join(","),
   },
   breakpoints: {
     values: {
