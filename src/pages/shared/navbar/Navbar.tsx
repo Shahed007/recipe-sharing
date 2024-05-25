@@ -11,7 +11,7 @@ import Button from "@mui/material/Button";
 import Tooltip from "@mui/material/Tooltip";
 import MenuItem from "@mui/material/MenuItem";
 import AdbIcon from "@mui/icons-material/Adb";
-import React, { useState } from "react";
+import React, {  useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import scrollTop from "../../../utility/scrollTop";
 import { useAuth } from "../../../hooks/useAuth";
@@ -25,7 +25,7 @@ const Navbar = () => {
   >(null);
   const { pathname } = useLocation();
   const [isActiveRoute, setIsActiveRoute] = useState<boolean>(false);
-  const { user, loagout, loginAndRegistration } = useAuth();
+  const { user, loginAndRegistration, logOut, authLoading } = useAuth();
 
   const handleActiveRoute = (path: string = "/") => {
     setIsActiveRoute(path === pathname);
@@ -45,6 +45,15 @@ const Navbar = () => {
 
   const handleCloseUserMenu = () => {
     setAnchorElUser(null);
+  };
+
+  const handleLoginRegistration = () => {
+    loginAndRegistration();
+  };
+
+  const handleLogout = () => {
+    logOut();
+    setAnchorElNav(null);
   };
 
   return (
@@ -170,7 +179,16 @@ const Navbar = () => {
             ))}
           </Box>
 
-          {user?.email ? (
+          {authLoading && !user ? (
+            <Button
+              onClick={handleLoginRegistration}
+              sx={{ display: { sm: "block", xs: "none" } }}
+              color="secondary"
+              variant="contained"
+            >
+              Google Login
+            </Button>
+          ) : (
             <Box sx={{ flexGrow: 0 }}>
               <Tooltip title="Open settings">
                 <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
@@ -205,27 +223,17 @@ const Navbar = () => {
                     ({"50"})
                   </Typography>
                 </MenuItem>
-                {settings.map((setting) => (
-                  <>
-                    <MenuItem
-                      sx={{ width: "200px" }}
-                      key={setting}
-                      onClick={handleCloseUserMenu}
-                    >
-                      <Typography textAlign="center">{setting}</Typography>
-                    </MenuItem>
-                  </>
-                ))}
+                <MenuItem sx={{ width: "200px" }} onClick={handleCloseUserMenu}>
+                  <Typography textAlign="center">
+                    {user?.displayName}
+                  </Typography>
+                </MenuItem>
+
+                <MenuItem sx={{ width: "200px" }} onClick={handleLogout}>
+                  <Typography textAlign="center">Logout</Typography>
+                </MenuItem>
               </Menu>
             </Box>
-          ) : (
-            <Button
-              sx={{ display: { sm: "block", xs: "none" } }}
-              color="secondary"
-              variant="contained"
-            >
-              Google Login
-            </Button>
           )}
         </Toolbar>
       </Container>
@@ -240,4 +248,3 @@ const pages: { name: string; path: string }[] = [
   { name: "Recipes", path: "/recipes" },
   { name: "Add-Recipes", path: "/add-recipes" },
 ];
-const settings = ["MD Shahed", "Logout"];
