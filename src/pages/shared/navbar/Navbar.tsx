@@ -14,6 +14,7 @@ import AdbIcon from "@mui/icons-material/Adb";
 import React, { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import scrollTop from "../../../utility/scrollTop";
+import { useAuth } from "../../../hooks/useAuth";
 
 const Navbar = () => {
   const [anchorElNav, setAnchorElNav] = useState<
@@ -24,10 +25,9 @@ const Navbar = () => {
   >(null);
   const { pathname } = useLocation();
   const [isActiveRoute, setIsActiveRoute] = useState<boolean>(false);
+  const { user, loagout, loginAndRegistration } = useAuth();
 
-  const user = null;
-
-  const handleActiveRoute = (path: string = '/') => {
+  const handleActiveRoute = (path: string = "/") => {
     setIsActiveRoute(path === pathname);
     scrollTop();
   };
@@ -48,7 +48,6 @@ const Navbar = () => {
     setAnchorElUser(null);
   };
 
-  
   return (
     <AppBar position="sticky" sx={{ background: "background", zIndex: 200 }}>
       <Container maxWidth="xl">
@@ -105,7 +104,7 @@ const Navbar = () => {
                   <Typography
                     onClick={() => handleActiveRoute(item.path)}
                     sx={{
-                      color: isActiveRoute  ? "primary.main" : "",
+                      color: isActiveRoute ? "primary.main" : "",
                     }}
                     textAlign="center"
                   >
@@ -172,7 +171,7 @@ const Navbar = () => {
             ))}
           </Box>
 
-          {user ? (
+          {user?.email ? (
             <Box sx={{ flexGrow: 0 }}>
               <Tooltip title="Open settings">
                 <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
