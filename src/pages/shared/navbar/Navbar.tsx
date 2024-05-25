@@ -33,7 +33,6 @@ const Navbar = () => {
   };
 
   const handleOpenNavMenu = (event: React.MouseEvent<HTMLButtonElement>) => {
-    console.log(event.currentTarget);
     setAnchorElNav(event.currentTarget);
   };
   const handleOpenUserMenu = (event: React.MouseEvent<HTMLButtonElement>) => {
