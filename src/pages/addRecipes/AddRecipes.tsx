@@ -20,6 +20,7 @@ import SpringModal from "../../components/modal/SpringModal";
 import React, { useState } from "react";
 import axios from "axios";
 import imageUpload from "../../utility/imageUpload";
+import Select, { MultiValue } from "react-select";
 
 const VisuallyHiddenInput = styled("input")({
   clip: "rect(0 0 0 0)",
@@ -33,27 +34,35 @@ const VisuallyHiddenInput = styled("input")({
   width: 1,
 });
 
-export interface RecipeProps {
+ interface RecipeProps {
   recipe_name: string | null;
   details: string | null;
   video: string | null;
-  country: string | null;
-  category: string | null;
   image: string | null;
 }
 
 const AddRecipes = () => {
+  const [selectedCountry, setSelectedCountry] = useState<CountryOption | null>(
+    null
+  );
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [video, setVideo] = useState<string | null>(null);
   const [confirmVideo, setConfirmVideo] = useState<string | null>(null);
   const [imageLoading, setImageLoading] = useState<boolean>(false);
+  const [selectedOption, setSelectedOption] = useState<
+    MultiValue<{ value: string; label: string }>
+  >([]);
+
+  const handleChange = (
+    newValue: MultiValue<{ value: string; label: string }>
+  ) => {
+    setSelectedOption(newValue);
+  };
   // recipe details
   const [recipe, setRecipe] = useState<RecipeProps>({
     recipe_name: null,
     details: null,
     video: null,
-    country: null,
-    category: null,
     image: null,
   });
 
@@ -64,6 +73,13 @@ const AddRecipes = () => {
 
   const handleDeleteVideo = () => {
     setConfirmVideo(null);
+  };
+
+  const handleChangeCountry = (
+    event: React.SyntheticEvent,
+    newValue: CountryOption | null
+  ) => {
+    setSelectedCountry(newValue);
   };
 
   const handleFileChange = async (
@@ -77,6 +93,20 @@ const AddRecipes = () => {
       setRecipe({ ...recipe, image: res.display_url });
       setImageLoading(false);
     }
+  };
+
+  const handlePublishRecipe = async () => {
+    const data = {
+      recipe_name: recipe.recipe_name || "not found",
+      recipe_details: recipe.details || "not found",
+      video: confirmVideo || "not found",
+      country: selectedCountry || "not found",
+      category: selectedOption || "not found",
+      creatorEmail: "lorem@gmail.com" || "not found",
+      watchCount: 0,
+      purchased_by: [],
+    };
+    console.log(data);
   };
 
   return (
@@ -181,6 +211,7 @@ const AddRecipes = () => {
                   borderBottom={"1px solid #ccc"}
                 >
                   <LoadingButton
+                    onClick={handlePublishRecipe}
                     size="large"
                     variant="contained"
                     color="secondary"
@@ -252,16 +283,12 @@ const AddRecipes = () => {
                   <Typography fontWeight={500} variant="body1" component={"h3"}>
                     Category
                   </Typography>
-                  <Autocomplete
-                    fullWidth
-                    size="small"
-                    disablePortal
-                    id="combo-box-demo"
-                    options={top100Films}
-                    getOptionLabel={(option: MovieOption) => option.label}
-                    renderInput={(params) => (
-                      <TextField {...params} placeholder="Select category" />
-                    )}
+                  <Select
+                    className="category"
+                    isMulti
+                    defaultValue={selectedOption}
+                    onChange={handleChange}
+                    options={option}
                   />
                 </Box>
                 <Box
@@ -282,11 +309,12 @@ const AddRecipes = () => {
                     size="small"
                     disablePortal
                     id="combo-box-demo"
-                    options={top100Films}
-                    getOptionLabel={(option: MovieOption) => option.label}
+                    options={country}
+                    getOptionLabel={(option: CountryOption) => option.label}
                     renderInput={(params) => (
-                      <TextField {...params} placeholder="Select countery" />
+                      <TextField {...params} placeholder="Select country" />
                     )}
+                    onChange={handleChangeCountry}
                   />
                 </Box>
               </Box>
@@ -349,135 +377,104 @@ const AddRecipes = () => {
 
 export default AddRecipes;
 
-interface MovieOption {
+interface CountryOption {
+  value: string;
   label: string;
-  year: number;
 }
 
-const top100Films: MovieOption[] = [
-  { label: "The Shawshank Redemption", year: 1994 },
-  { label: "The Godfather", year: 1972 },
-  { label: "The Godfather: Part II", year: 1974 },
-  { label: "The Dark Knight", year: 2008 },
-  { label: "12 Angry Men", year: 1957 },
-  { label: "Schindler's List", year: 1993 },
-  { label: "Pulp Fiction", year: 1994 },
+const option = [
+  { value: "biriyani", label: "Biriyani" },
+  { value: "kabuli_pulao", label: "Kabuli Pulao " },
+  { value: "tavë_kosi", label: "Tavë Kosi " },
+  { value: "couscous", label: "Couscous " },
+  { value: "escudella", label: "Escudella " },
+  { value: "muamba_de_galinha", label: "Muamba de Galinha " },
+  { value: "asado", label: "Asado " },
+  { value: "khorovats", label: "Khorovats " },
+  { value: "meat_pie", label: "Meat Pie " },
+  { value: "wiener_schnitzel", label: "Wiener Schnitzel " },
+  { value: "plov", label: "Plov " },
+  { value: "conch_salad", label: "Conch Salad " },
+  { value: "machboos", label: "Machboos " },
   {
-    label: "The Lord of the Rings: The Return of the King",
-    year: 2003,
+    value: "cou-cou_and_flying_fish",
+    label: "Cou-Cou and Flying Fish ",
   },
-  { label: "The Good, the Bad and the Ugly", year: 1966 },
-  { label: "Fight Club", year: 1999 },
+  { value: "draniki", label: "Draniki " },
+  { value: "moules_frites", label: "Moules-Frites " },
+  { value: "rice_and_beans", label: "Rice and Beans " },
+  { value: "kuli kuli", label: "Kuli Kuli " },
+  { value: "ema_datshi", label: "Ema Datshi " },
+  { value: "salteñas", label: "Salteñas " },
+  { value: "čevapi", label: "Ćevapi " },
+  { value: "seswaa", label: "Seswaa " },
+  { value: "feijoada", label: "Feijoada " },
+  { value: "ambuyat", label: "Ambuyat " },
+  { value: "banitsa", label: "Banitsa " },
+  { value: "riz gras", label: "Riz Gras " },
+  { value: "ndagala", label: "Ndagala " },
+  { value: "amok_trey", label: "Amok Trey " },
+  { value: "ndolé", label: "Ndolé " },
+  { value: "poutine", label: "Poutine" },
+  { value: "catchupa", label: "Catchupa " },
   {
-    label: "The Lord of the Rings: The Fellowship of the Ring",
-    year: 2001,
+    value: "cassava_leaves",
+    label: "Cassava Leaves ",
   },
+  { value: "banda_banda", label: "Banda Banda " },
+  { value: "empanadas", label: "Empanadas " },
+  { value: "peking_duck", label: "Peking Duck " },
+  { value: "arepas", label: "Arepas " },
   {
-    label: "Star Wars: Episode V - The Empire Strikes Back",
-    year: 1980,
+    value: "langouste_a_la_vanille",
+    label: "Langouste à la Vanille ",
   },
-  { label: "Forrest Gump", year: 1994 },
-  { label: "Inception", year: 2010 },
-  {
-    label: "The Lord of the Rings: The Two Towers",
-    year: 2002,
-  },
-  { label: "One Flew Over the Cuckoo's Nest", year: 1975 },
-  { label: "Goodfellas", year: 1990 },
-  { label: "The Matrix", year: 1999 },
-  { label: "Seven Samurai", year: 1954 },
-  {
-    label: "Star Wars: Episode IV - A New Hope",
-    year: 1977,
-  },
-  { label: "City of God", year: 2002 },
-  { label: "Se7en", year: 1995 },
-  { label: "The Silence of the Lambs", year: 1991 },
-  { label: "It's a Wonderful Life", year: 1946 },
-  { label: "Life Is Beautiful", year: 1997 },
-  { label: "The Usual Suspects", year: 1995 },
-  { label: "Léon: The Professional", year: 1994 },
-  { label: "Spirited Away", year: 2001 },
-  { label: "Saving Private Ryan", year: 1998 },
-  { label: "Once Upon a Time in the West", year: 1968 },
-  { label: "American History X", year: 1998 },
-  { label: "Interstellar", year: 2014 },
-  { label: "Casablanca", year: 1942 },
-  { label: "City Lights", year: 1931 },
-  { label: "Psycho", year: 1960 },
-  { label: "The Green Mile", year: 1999 },
-  { label: "The Intouchables", year: 2011 },
-  { label: "Modern Times", year: 1936 },
-  { label: "Raiders of the Lost Ark", year: 1981 },
-  { label: "Rear Window", year: 1954 },
-  { label: "The Pianist", year: 2002 },
-  { label: "The Departed", year: 2006 },
-  { label: "Terminator 2: Judgment Day", year: 1991 },
-  { label: "Back to the Future", year: 1985 },
-  { label: "Whiplash", year: 2014 },
-  { label: "Gladiator", year: 2000 },
-  { label: "Memento", year: 2000 },
-  { label: "The Prestige", year: 2006 },
-  { label: "The Lion King", year: 1994 },
-  { label: "Apocalypse Now", year: 1979 },
-  { label: "Alien", year: 1979 },
-  { label: "Sunset Boulevard", year: 1950 },
-  {
-    label:
-      "Dr. Strangelove or: How I Learned to Stop Worrying and Love the Bomb",
-    year: 1964,
-  },
-  { label: "The Great Dictator", year: 1940 },
-  { label: "Cinema Paradiso", year: 1988 },
-  { label: "The Lives of Others", year: 2006 },
-  { label: "Grave of the Fireflies", year: 1988 },
-  { label: "Paths of Glory", year: 1957 },
-  { label: "Django Unchained", year: 2012 },
-  { label: "The Shining", year: 1980 },
-  { label: "WALL·E", year: 2008 },
-  { label: "American Beauty", year: 1999 },
-  { label: "The Dark Knight Rises", year: 2012 },
-  { label: "Princess Mononoke", year: 1997 },
-  { label: "Aliens", year: 1986 },
-  { label: "Oldboy", year: 2003 },
-  { label: "Once Upon a Time in America", year: 1984 },
-  { label: "Witness for the Prosecution", year: 1957 },
-  { label: "Das Boot", year: 1981 },
-  { label: "Citizen Kane", year: 1941 },
-  { label: "North by Northwest", year: 1959 },
-  { label: "Vertigo", year: 1958 },
-  {
-    label: "Star Wars: Episode VI - Return of the Jedi",
-    year: 1983,
-  },
-  { label: "Reservoir Dogs", year: 1992 },
-  { label: "Braveheart", year: 1995 },
-  { label: "M", year: 1931 },
-  { label: "Requiem for a Dream", year: 2000 },
-  { label: "Amélie", year: 2001 },
-  { label: "A Clockwork Orange", year: 1971 },
-  { label: "Like Stars on Earth", year: 2007 },
-  { label: "Taxi Driver", year: 1976 },
-  { label: "Lawrence of Arabia", year: 1962 },
-  { label: "Double Indemnity", year: 1944 },
-  {
-    label: "Eternal Sunshine of the Spotless Mind",
-    year: 2004,
-  },
-  { label: "Amadeus", year: 1984 },
-  { label: "To Kill a Mockingbird", year: 1962 },
-  { label: "Toy Story 3", year: 2010 },
-  { label: "Logan", year: 2017 },
-  { label: "Full Metal Jacket", year: 1987 },
-  { label: "Dangal", year: 2016 },
-  { label: "The Sting", year: 1973 },
-  { label: "2001: A Space Odyssey", year: 1968 },
-  { label: "Singin' in the Rain", year: 1952 },
-  { label: "Toy Story", year: 1995 },
-  { label: "Bicycle Thieves", year: 1948 },
-  { label: "The Kid", year: 1921 },
-  { label: "Inglourious Basterds", year: 2009 },
-  { label: "Snatch", year: 2000 },
-  { label: "3 Idiots", year: 2009 },
-  { label: "Monty Python and the Holy Grail", year: 1975 },
+  { value: "saka_saka", label: "Saka Saka " },
+  { value: "gallo_pinto", label: "Gallo Pinto " },
+  { value: "pašticada", label: "Pašticada " },
+  { value: "ropa_vieja", label: "Ropa Vieja " },
+];
+
+const country: CountryOption[] = [
+  { value: "bangladesh", label: "Bangladesh" },
+  { value: "afghanistan", label: "Afghanistan" },
+  { value: "albania", label: "Albania" },
+  { value: "algeria", label: "Algeria" },
+  { value: "andorra", label: "Andorra" },
+  { value: "angola", label: "Angola" },
+  { value: "argentina", label: "Argentina" },
+  { value: "armenia", label: "Armenia" },
+  { value: "australia", label: "Australia" },
+  { value: "austria", label: "Austria" },
+  { value: "azerbaijan", label: "Azerbaijan" },
+  { value: "bahamas", label: "Bahamas" },
+  { value: "bahrain", label: "Bahrain" },
+  { value: "barbados", label: "Barbados" },
+  { value: "belarus", label: "Belarus" },
+  { value: "belgium", label: "Belgium" },
+  { value: "belize", label: "Belize" },
+  { value: "benin", label: "Benin" },
+  { value: "bhutan", label: "Bhutan" },
+  { value: "bolivia", label: "Bolivia" },
+  { value: "bosnia_and_herzegovina", label: "Bosnia and Herzegovina" },
+  { value: "botswana", label: "Botswana" },
+  { value: "brazil", label: "Brazil" },
+  { value: "brunei", label: "Brunei" },
+  { value: "bulgaria", label: "Bulgaria" },
+  { value: "burkina_faso", label: "Burkina Faso" },
+  { value: "burundi", label: "Burundi" },
+  { value: "cambodia", label: "Cambodia" },
+  { value: "cameroon", label: "Cameroon" },
+  { value: "canada", label: "Canada" },
+  { value: "cape_verde", label: "Cape Verde" },
+  { value: "central_african_republic", label: "Central African Republic" },
+  { value: "chad", label: "Chad" },
+  { value: "chile", label: "Chile" },
+  { value: "china", label: "China" },
+  { value: "colombia", label: "Colombia" },
+  { value: "comoros", label: "Comoros" },
+  { value: "congo", label: "Congo" },
+  { value: "costa_rica", label: "Costa Rica" },
+  { value: "croatia", label: "Croatia" },
+  { value: "cuba", label: "Cuba" },
 ];

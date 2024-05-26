@@ -29,7 +29,7 @@ textarea {
   font-family: inherit;
 }
 
-textarea:focus{
+textarea:focus {
   outline-color: #fcb541;
 }
 
@@ -42,4 +42,12 @@ input[type="file"] {
   display: inline-block;
   padding: 6px 12px;
   cursor: pointer;
+}
+
+.category {
+  width: 100%;
+}
+
+.css-13cymwt-control:focus {
+  border-color: #fcb541 !important;
 }
