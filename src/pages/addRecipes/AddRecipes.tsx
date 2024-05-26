@@ -9,12 +9,17 @@ import {
   Button,
   styled,
   Autocomplete,
+  Tooltip,
 } from "@mui/material";
 import CloudUploadIcon from "@mui/icons-material/CloudUpload";
+import DeleteIcon from "@mui/icons-material/Delete";
+import YouTubeIcon from "@mui/icons-material/YouTube";
 import { CKEditor } from "@ckeditor/ckeditor5-react";
 import ClassicEditor from "@ckeditor/ckeditor5-build-classic";
 import SpringModal from "../../components/modal/SpringModal";
-import { useState } from "react";
+import React, { useState } from "react";
+import axios from "axios";
+import imageUpload from "../../utility/imageUpload";
 
 const VisuallyHiddenInput = styled("input")({
   clip: "rect(0 0 0 0)",
@@ -28,168 +33,317 @@ const VisuallyHiddenInput = styled("input")({
   width: 1,
 });
 
+export interface RecipeProps {
+  recipe_name: string | null;
+  details: string | null;
+  video: string | null;
+  country: string | null;
+  category: string | null;
+  image: string | null;
+}
+
 const AddRecipes = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [video, setVideo] = useState<string | null>(null);
+  const [confirmVideo, setConfirmVideo] = useState<string | null>(null);
+  const [imageLoading, setImageLoading] = useState<boolean>(false);
+  // recipe details
+  const [recipe, setRecipe] = useState<RecipeProps>({
+    recipe_name: null,
+    details: null,
+    video: null,
+    country: null,
+    category: null,
+    image: null,
+  });
+
+  const handleAddVideo = () => {
+    setIsModalOpen(false);
+    setConfirmVideo(video);
+  };
+
+  const handleDeleteVideo = () => {
+    setConfirmVideo(null);
+  };
+
+  const handleFileChange = async (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    const imageList = event.target.files;
+    const image = imageList?.[0];
+    setImageLoading(true);
+    if (image) {
+      const res = await imageUpload(image);
+      setRecipe({ ...recipe, image: res.display_url });
+      setImageLoading(false);
+    }
+  };
+
   return (
-    <Box component={"section"} py={"5rem"}>
-      <Container component={"div"} maxWidth="xl">
-        <Grid spacing={"1.625rem"} container>
-          <Grid item xs={12} lg={8}>
-            <Box borderRadius={"5px"} border={"1px solid #ccc"} p={"1rem"}>
-              <FormControl fullWidth>
+    <>
+      <Box component={"section"} py={"5rem"}>
+        <Container component={"div"} maxWidth="xl">
+          <Grid spacing={"1.625rem"} container>
+            {/*Description Start  */}
+            <Grid item xs={12} lg={8}>
+              <Box borderRadius={"5px"} border={"1px solid #ccc"} p={"1rem"}>
+                <FormControl fullWidth>
+                  <Typography mb={".5rem"} component={"h4"}>
+                    Recipes Name
+                  </Typography>
+                  <TextField
+                    onChange={(e) =>
+                      setRecipe({ ...recipe, recipe_name: e.target.value })
+                    }
+                    fullWidth
+                    placeholder="Enter recipes name"
+                    id="outlined-basic"
+                    variant="outlined"
+                  />
+                </FormControl>
+              </Box>
+              <Box
+                mt={"1.625rem"}
+                borderRadius={"5px"}
+                border={"1px solid #ccc"}
+                p={"1rem"}
+              >
                 <Typography mb={".5rem"} component={"h4"}>
-                  Recipes Name
+                  Recipes Details
                 </Typography>
-                <TextField
-                  fullWidth
-                  placeholder="Enter recipes name"
-                  id="outlined-basic"
-                  variant="outlined"
-                />
-              </FormControl>
-            </Box>
-            <Box
-              mt={"1.625rem"}
-              borderRadius={"5px"}
-              border={"1px solid #ccc"}
-              p={"1rem"}
-            >
-              <CKEditor editor={ClassicEditor}></CKEditor>
-            </Box>
-          </Grid>
-          <Grid item xs={12} lg={4}>
-            <Box borderRadius={"5px"} border={"1px solid #ccc"} p={"1rem"}>
-              <Box
-                component={"div"}
-                pb={"1rem"}
-                borderBottom={"1px solid #ccc"}
-              >
-                <LoadingButton
-                  size="large"
-                  variant="contained"
-                  color="secondary"
-                  fullWidth
-                >
-                  Publish Now
-                </LoadingButton>
+                <CKEditor
+                  onChange={(event, editor) =>
+                    setRecipe({ ...recipe, details: editor.getData() })
+                  }
+                  editor={ClassicEditor}
+                ></CKEditor>
               </Box>
               <Box
-                component={"div"}
-                py={"1rem"}
-                borderBottom={"1px solid #ccc"}
-                display={"flex"}
+                mt={"1.625rem"}
+                borderRadius={"5px"}
+                border={"1px solid #ccc"}
+                p={confirmVideo ? "" : "1rem"}
+                minHeight={"350px"}
+                display={confirmVideo ? "" : "flex"}
                 alignItems={"center"}
-                justifyContent={"space-between"}
+                justifyContent={"center"}
               >
-                <Typography
-                  mb={".5rem"}
-                  variant="body1"
-                  fontWeight={500}
-                  component={"h3"}
-                >
-                  Recipe Image
-                </Typography>
-                <Button
-                  size="large"
-                  component="label"
-                  role={undefined}
-                  variant="contained"
-                  tabIndex={-1}
-                  startIcon={<CloudUploadIcon />}
-                >
-                  Upload
-                  <VisuallyHiddenInput type="file" />
-                </Button>
-              </Box>
-              <Box
-                component={"div"}
-                py={"1rem"}
-                borderBottom={"1px solid #ccc"}
-                display={"flex"}
-                alignItems={"start"}
-                justifyContent={"space-between"}
-                flexDirection={"column"}
-                gap={"1rem"}
-              >
-                <Typography fontWeight={500} variant="body1" component={"h3"}>
-                  Category
-                </Typography>
-                <Autocomplete
-                  fullWidth
-                  size="small"
-                  disablePortal
-                  id="combo-box-demo"
-                  options={top100Films}
-                  getOptionLabel={(option: MovieOption) => option.label}
-                  renderInput={(params) => (
-                    <TextField {...params} placeholder="Select category" />
-                  )}
-                />
-              </Box>
-              <Box
-                component={"div"}
-                py={"1rem"}
-                borderBottom={"1px solid #ccc"}
-                display={"flex"}
-                alignItems={"start"}
-                justifyContent={"space-between"}
-                flexDirection={"column"}
-                gap={"1rem"}
-              >
-                <Typography fontWeight={500} variant="body1" component={"h3"}>
-                  Country
-                </Typography>
-                <Autocomplete
-                  fullWidth
-                  size="small"
-                  disablePortal
-                  id="combo-box-demo"
-                  options={top100Films}
-                  getOptionLabel={(option: MovieOption) => option.label}
-                  renderInput={(params) => (
-                    <TextField {...params} placeholder="Select countery" />
-                  )}
-                />
-              </Box>
-              <Box
-                component={"div"}
-                py={"1rem"}
-                borderBottom={"1px solid #ccc"}
-                display={"flex"}
-                alignItems={"start"}
-                justifyContent={"space-between"}
-                flexDirection={"column"}
-                gap={"1rem"}
-              >
-                <Button onClick={() => setIsModalOpen(true)} variant="outlined">
-                  Embed youtube video
-                </Button>
-                <SpringModal
-                  open={isModalOpen}
-                  handleClose={() => setIsModalOpen(false)}
-                  customWidth={1140}
-                >
-                  <Grid container>
-                    <Grid item xs={12} lg={8}>
-                      video
-                    </Grid>
-                    <Grid
-                      item
-                      xs={12}
-                      lg={4}
+                {confirmVideo ? (
+                  <Box display={"flex"} flexDirection={"column"} gap={"1rem"}>
+                    <Box component={"div"} p={"1rem"}>
+                      <Button
+                        endIcon={<DeleteIcon />}
+                        variant="outlined"
+                        color="secondary"
+                        onClick={handleDeleteVideo}
+                      >
+                        Delete
+                      </Button>
+                    </Box>
+                    <Box
+                      height={"350px"}
+                      width={"100%"}
+                      sx={{
+                        "& iframe": {
+                          width: "100%",
+                          height: "100%",
+                          border: "1px solid #ccc",
+                          borderBottomLeftRadius: "5px",
+                          borderBottomRightRadius: "5px",
+                        },
+                      }}
                       component={"div"}
-                      contentEditable={true}
+                      dangerouslySetInnerHTML={{ __html: confirmVideo ?? "" }}
+                    ></Box>
+                  </Box>
+                ) : (
+                  <Tooltip title="Embed video using html iframe tag">
+                    <Button
+                      color="error"
+                      startIcon={<YouTubeIcon />}
+                      onClick={() => setIsModalOpen(true)}
+                      variant="outlined"
                     >
-                      fkfj
-                    </Grid>
-                  </Grid>
-                </SpringModal>
+                      Embed youtube video
+                    </Button>
+                  </Tooltip>
+                )}
               </Box>
+            </Grid>
+            {/* Description end */}
+
+            {/* Side bar start */}
+            <Grid item xs={12} lg={4}>
+              <Box borderRadius={"5px"} border={"1px solid #ccc"} p={"1rem"}>
+                <Box
+                  component={"div"}
+                  pb={"1rem"}
+                  borderBottom={"1px solid #ccc"}
+                >
+                  <LoadingButton
+                    size="large"
+                    variant="contained"
+                    color="secondary"
+                    fullWidth
+                  >
+                    Publish Now
+                  </LoadingButton>
+                </Box>
+                <Box
+                  component={"div"}
+                  py={"1rem"}
+                  borderBottom={"1px solid #ccc"}
+                  display={"flex"}
+                  alignItems={"center"}
+                  justifyContent={"space-between"}
+                >
+                  <Typography
+                    mb={".5rem"}
+                    variant="body1"
+                    fontWeight={500}
+                    component={"h3"}
+                  >
+                    Recipe Image
+                  </Typography>
+
+                  <LoadingButton
+                    loading={imageLoading}
+                    component="label"
+                    role={undefined}
+                    variant="contained"
+                    tabIndex={-1}
+                    startIcon={<CloudUploadIcon />}
+                  >
+                    Upload image
+                    <VisuallyHiddenInput
+                      onChange={handleFileChange}
+                      type="file"
+                    />
+                  </LoadingButton>
+                </Box>
+                {recipe.image && (
+                  <Box
+                    component={"div"}
+                    py={"1rem"}
+                    borderBottom={"1px solid #ccc"}
+                    height={"300px"}
+                  >
+                    <img
+                      style={{
+                        width: "100%",
+                        height: "100%",
+                        objectFit: "cover",
+                      }}
+                      src={recipe.image ?? ""}
+                      alt={recipe.recipe_name ?? ""}
+                    />
+                  </Box>
+                )}
+                <Box
+                  component={"div"}
+                  py={"1rem"}
+                  borderBottom={"1px solid #ccc"}
+                  display={"flex"}
+                  alignItems={"start"}
+                  justifyContent={"space-between"}
+                  flexDirection={"column"}
+                  gap={"1rem"}
+                >
+                  <Typography fontWeight={500} variant="body1" component={"h3"}>
+                    Category
+                  </Typography>
+                  <Autocomplete
+                    fullWidth
+                    size="small"
+                    disablePortal
+                    id="combo-box-demo"
+                    options={top100Films}
+                    getOptionLabel={(option: MovieOption) => option.label}
+                    renderInput={(params) => (
+                      <TextField {...params} placeholder="Select category" />
+                    )}
+                  />
+                </Box>
+                <Box
+                  component={"div"}
+                  py={"1rem"}
+                  borderBottom={"1px solid #ccc"}
+                  display={"flex"}
+                  alignItems={"start"}
+                  justifyContent={"space-between"}
+                  flexDirection={"column"}
+                  gap={"1rem"}
+                >
+                  <Typography fontWeight={500} variant="body1" component={"h3"}>
+                    Country
+                  </Typography>
+                  <Autocomplete
+                    fullWidth
+                    size="small"
+                    disablePortal
+                    id="combo-box-demo"
+                    options={top100Films}
+                    getOptionLabel={(option: MovieOption) => option.label}
+                    renderInput={(params) => (
+                      <TextField {...params} placeholder="Select countery" />
+                    )}
+                  />
+                </Box>
+              </Box>
+            </Grid>
+            {/* Side bar end */}
+          </Grid>
+        </Container>
+      </Box>
+      {/* This modal for youtube video embed */}
+      <SpringModal
+        open={isModalOpen}
+        handleClose={() => setIsModalOpen(false)}
+        customWidth={1040}
+      >
+        <Grid fontFamily={"Inter"} container spacing={"1.625rem"}>
+          <Grid item xs={12} lg={8}>
+            <Box
+              width={"100%"}
+              height={"100%"}
+              dangerouslySetInnerHTML={{ __html: video ?? "" }}
+              sx={{
+                "& iframe": {
+                  width: "100%",
+                  minHeight: "200px",
+                  borderRadius: "10px",
+                  boxShadow: "1px 2px 5px #ccc",
+                },
+              }}
+            ></Box>
+          </Grid>
+          <Grid item xs={12} lg={4} component={"div"}>
+            <Typography variant="body1" fontWeight={500} mb={".5rem"}>
+              Embed
+            </Typography>
+            <textarea
+              name="embed_video"
+              onChange={(e) => setVideo(e.target.value)}
+              placeholder="Embed your video here"
+            ></textarea>
+            <Box
+              mt={"1rem"}
+              component={"div"}
+              display={"flex"}
+              justifyContent={"flex-end"}
+            >
+              <Button
+                onClick={handleAddVideo}
+                variant="contained"
+                color="secondary"
+              >
+                Confirm
+              </Button>
             </Box>
           </Grid>
         </Grid>
-      </Container>
-    </Box>
+      </SpringModal>
+    </>
   );
 };
 

@@ -11,3 +11,35 @@
 a {
   text-decoration: none;
 }
+
+.ck.ck-balloon-panel.ck-powered-by-balloon .ck.ck-powered-by {
+  display: none !important;
+}
+
+textarea {
+  resize: none;
+  width: 100%;
+  display: block;
+  min-height: 250px;
+  padding: 1rem;
+  border-color: #ccc;
+  border-radius: 5px;
+  box-shadow: inset 1px 1px 3px #ccc;
+  color: black;
+  font-family: inherit;
+}
+
+textarea:focus{
+  outline-color: #fcb541;
+}
+
+input[type="file"] {
+  display: none;
+}
+
+.custom-file-upload {
+  border: 1px solid #ccc;
+  display: inline-block;
+  padding: 6px 12px;
+  cursor: pointer;
+}
