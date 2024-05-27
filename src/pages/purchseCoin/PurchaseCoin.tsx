@@ -1,6 +1,13 @@
 import { Box, Button, Container, Grid, Paper, Typography } from "@mui/material";
+import { useNavigate } from "react-router-dom";
 
 const PurchaseCoin = () => {
+  const navigate = useNavigate();
+
+  const handleAddPriceLocalStorage = (price: number) => {
+    localStorage.setItem("price", JSON.stringify(price));
+    navigate("/payment");
+  };
   return (
     <Box component={"section"} py={"5rem"}>
       <Container maxWidth="xl">
@@ -58,7 +65,12 @@ const PurchaseCoin = () => {
               </Box>
 
               <Box component={"div"} mt={"1rem"}>
-                <Button size="medium" variant="outlined" fullWidth>
+                <Button
+                  onClick={() => handleAddPriceLocalStorage(1)}
+                  size="medium"
+                  variant="outlined"
+                  fullWidth
+                >
                   Buy Now
                 </Button>
               </Box>
@@ -111,7 +123,12 @@ const PurchaseCoin = () => {
               </Box>
 
               <Box component={"div"} mt={"1rem"}>
-                <Button size="medium" variant="outlined" fullWidth>
+                <Button
+                  onClick={() => handleAddPriceLocalStorage(10)}
+                  size="medium"
+                  variant="outlined"
+                  fullWidth
+                >
                   Buy Now
                 </Button>
               </Box>
@@ -162,7 +179,12 @@ const PurchaseCoin = () => {
               </Box>
 
               <Box component={"div"} mt={"1rem"}>
-                <Button size="medium" variant="outlined" fullWidth>
+                <Button
+                  onClick={() => handleAddPriceLocalStorage(5)}
+                  size="medium"
+                  variant="outlined"
+                  fullWidth
+                >
                   Buy Now
                 </Button>
               </Box>

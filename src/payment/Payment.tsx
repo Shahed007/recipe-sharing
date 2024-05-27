@@ -16,14 +16,21 @@ export default function Payment() {
   const [clientSecret, setClientSecret] = useState("");
 
   useEffect(() => {
+    const getPrice: string | null = localStorage.getItem("price");
+    const priceString = getPrice ?? "0"; // Provide a default value if getPrice is null
+    const convertStringToNumber = JSON.parse(priceString);
+    const price = parseInt(convertStringToNumber);
+    console.log(price);
     // Create PaymentIntent as soon as the page loads
-    fetch("http://localhost:500/create-payment-intent", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({price: 10}),
-    })
-      .then((res) => res.json())
-      .then((data) => setClientSecret(data.clientSecret));
+    if (price) {
+      fetch("http://localhost:500/create-payment-intent", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ price: price }),
+      })
+        .then((res) => res.json())
+        .then((data) => setClientSecret(data.clientSecret));
+    }
   }, []);
 
   const appearance = {
