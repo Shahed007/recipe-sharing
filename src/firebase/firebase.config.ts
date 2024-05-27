@@ -2,12 +2,12 @@ import { initializeApp } from "firebase/app";
 import { getAuth } from "firebase/auth";
 
 const firebaseConfig = {
-  apiKey: import.meta.env.VITE_APIKEY,
-  authDomain: import.meta.env.VITE_AUTHDOMAIN,
-  projectId: import.meta.env.VITE_PROJECTID,
-  storageBucket: import.meta.env.VITE_STORAGEBUCKET,
-  messagingSenderId: import.meta.env.VITE_MESSAGINGSENDERID,
-  appId: import.meta.env.VITE_APPID,
+  apiKey: "AIzaSyBK2hXxDBVNBSL_syFusfV9QWykCDkp0s4",
+  authDomain: "recipe-sharing-8ca2e.firebaseapp.com",
+  projectId: "recipe-sharing-8ca2e",
+  storageBucket: "recipe-sharing-8ca2e.appspot.com",
+  messagingSenderId: "1083561381162",
+  appId: "1:1083561381162:web:066c823876f32e32aea253"
 };
 
 // Initialize Firebase

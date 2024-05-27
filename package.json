@@ -19,6 +19,8 @@
     "@mui/lab": "^5.0.0-alpha.170",
     "@mui/material": "^5.15.18",
     "@react-spring/web": "^9.7.3",
+    "@stripe/react-stripe-js": "^2.7.1",
+    "@stripe/stripe-js": "^3.4.1",
     "abab": "^2.0.6",
     "axios": "^1.7.2",
     "domexception": "^4.0.0",
