@@ -11,12 +11,24 @@ import Button from "@mui/material/Button";
 import Tooltip from "@mui/material/Tooltip";
 import MenuItem from "@mui/material/MenuItem";
 import AdbIcon from "@mui/icons-material/Adb";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import scrollTop from "../../../utility/scrollTop";
 import { useAuth } from "../../../hooks/useAuth";
+import {
+  useCreateUserMutation,
+  useGetSingleDataQuery,
+} from "../../../redux/api/recipe_slice_api";
+
+interface UserProps {
+  displayName: string | null;
+  photoURL: string | null;
+  email: string | null;
+  coins?: number | null;
+}
 
 const Navbar = () => {
+  const [createUser] = useCreateUserMutation();
   const [anchorElNav, setAnchorElNav] = useState<
     Element | (() => Element) | null
   >(null);
@@ -26,6 +38,18 @@ const Navbar = () => {
   const { pathname } = useLocation();
   const [isActiveRoute, setIsActiveRoute] = useState<boolean>(false);
   const { user, loginAndRegistration, logOut, authLoading } = useAuth();
+  const email = user?.email;
+  const { data, isLoading,  refetch } = useGetSingleDataQuery(email!, {
+    skip: !email, // Skip the query if email is not present
+  });
+
+  useEffect(() => {
+    if (user?.email) {
+      refetch();
+    }
+  }, [user, refetch]);
+
+ 
 
   const handleActiveRoute = (path: string = "/") => {
     setIsActiveRoute(path === pathname);
@@ -47,14 +71,22 @@ const Navbar = () => {
     setAnchorElUser(null);
   };
 
-  const handleLoginRegistration = () => {
-    loginAndRegistration();
+  const handleLoginRegistration = async () => {
+    const res = await loginAndRegistration();
+    const user: {displayName: string | null, photoURL: string | null, email: string | null} = {
+      displayName: res?.user.displayName,
+      photoURL: res?.user.photoURL,
+      email: res?.user.email,
+    };
+    await createUser(user);
   };
 
   const handleLogout = () => {
     logOut();
     setAnchorElNav(null);
   };
+
+  const { coins  } = (data as UserProps) || {};
 
   return (
     <AppBar position="sticky" sx={{ background: "background", zIndex: 200 }}>
@@ -219,10 +251,14 @@ const Navbar = () => {
                   }}
                 >
                   Coins{" "}
-                  <Typography sx={{ color: "primary.main" }}>
-                    {" "}
-                    ({"50"})
-                  </Typography>
+                  {isLoading ? (
+                    "loading"
+                  ) : (
+                    <Typography sx={{ color: "primary.main" }}>
+                      {" "}
+                      ({coins ?? 0})
+                    </Typography>
+                  )}
                 </MenuItem>
                 <MenuItem sx={{ width: "200px" }} onClick={handleCloseUserMenu}>
                   <Typography textAlign="center">
